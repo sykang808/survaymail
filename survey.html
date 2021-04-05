@@ -1,0 +1,525 @@
+<html>
+<head>
+    <title>AWS WAF Immserion Day</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        body {
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: rgb(255, 254, 254);
+        }
+
+        input[type="text"],
+        select.form-control {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #000000;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+            border-radius: 0;
+        }
+        input[type="text"]:focus,
+        select.form-control:focus {
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+        fieldset { 
+            margin: 20px;
+           }
+        .col-1, .col-2 {
+            padding-bottom: 10px;
+        }
+        .appended {
+            padding: 20px;
+            display: none;
+        }
+    </style>
+    <script>
+
+
+        function cloudYesClick() {
+           $('#cloud-appended1').show();
+           $('#cloud-appended2').show();
+        }
+        function cloudNoClick() {
+            $('#cloud-appended1').hide();
+            $('#cloud-appended2').hide();
+         }
+
+
+        function wafYesClick() {
+            $('#waf-appended').show();
+        }
+        function wafNoClick() {
+            $('#waf-appended').hide();
+        }
+
+        function metSaYes() {
+            $('#sa-appended').hide();
+
+        }
+        function metSaNo() {
+            $('#sa-appended').show();
+
+        }
+
+        function checkedTopics() {
+
+            var items=document.getElementsByName('additional-topic');
+            var selectedItems=[];
+            for(var i=0; i<items.length; i++){
+                if(items[i].type=='checkbox' && items[i].checked==true)
+                    selectedItems.push(items[i].value);
+            }
+            return selectedItems;
+			
+        }
+        function consoleLog() {
+            var company = $('#company').val();
+            var job = $('#job').val();
+            var name = $('#name').val();
+            var email = $('#email').val();
+            var satisfy = $('input[name="satisfyRadioOptions"]:checked').val();
+            var cloud = $('input[name="cloudRadioOptions"]:checked').val();
+            var cloudWorkload = $('#cloudWorkload').val();
+            var cloudTimeline = $('input[name="cloudTimelineRadioOption"]:checked').val();
+            var waf = $('input[name="wafRadioOptions"]:checked').val();
+            var wafTimeline = $('input[name="wafTimelineRadioOption"]:checked').val();
+            var mte = $('input[name="mteRadioOptions"]:checked').val();
+            var sa = $('input[name="saRadioOptions"]:checked').val();
+            var wantSa = $('input[name="wantSaRadioOption"]:checked').val();
+            var feedback = $('#feedback').val();
+
+            const body = {
+                "company": company, 
+                "job": job,
+                "name": name,
+                "email": email,
+//                    "background": background,
+                "satisfy": satisfy,
+                "cloud": cloud,
+                "cloudWorkload": cloudWorkload,
+                "cloudTimeline": cloudTimeline,
+                "waf": waf,
+                "wafTimeline": wafTimeline,
+                "mte": mte,
+                "sa": sa,
+                "wantSa": wantSa,
+                "topics": checkedTopics(),
+                "feedback": feedback
+            };
+            console.log(body); 
+        }
+        $(document).ready(function () {
+            
+            $('#submitForm').submit(function (e) {
+                e.preventDefault();
+
+                // ----- Start -----
+                // 아래 양식에서 요부분만 채워주시면 됩니다. :)
+                var company = $('#company').val();
+                var job = $('#job').val();
+                var name = $('#name').val();
+                var email = $('#email').val();
+
+//                var background = $('input[name="background"]:checked').val();
+                var satisfy = $('input[name="satisfyRadioOptions"]:checked').val();
+                var cloud = $('input[name="cloudRadioOptions"]:checked').val();
+                var cloudWorkload = $('#cloudWorkload').val();
+                var cloudTimeline = $('input[name="cloudTimelineRadioOption"]:checked').val();
+                var waf = $('input[name="wafRadioOptions"]:checked').val();
+                var wafTimeline = $('input[name="wafTimelineRadioOption"]:checked').val();
+                var mte = $('input[name="mteRadioOptions"]:checked').val();
+                var sa = $('input[name="saRadioOptions"]:checked').val();
+                var wantSa = $('input[name="wantSaRadioOption"]:checked').val();
+                var feedback = $('#feedback').val();
+
+                const body = {
+                    "company": company, 
+                    "job": job,
+                    "name": name,
+                    "email": email,
+//                    "background": background,
+                    "satisfy": satisfy,
+                    "cloud": cloud,
+                    "cloudWorkload": cloudWorkload,
+                    "cloudTimeline": cloudTimeline,
+                    "waf": waf,
+                    "wafTimeline": wafTimeline,
+                    "mte": mte,
+                    "sa": sa,
+                    "wantSa": wantSa,
+                    "topics": checkedTopics(),
+                    "feedback": feedback
+                };
+                console.log(body);
+                // 여기까지 채워서 공유해주시면 Lambda 함수는 Body 포맷에 맞게 제가 작업하겠습니다.
+                // ----- End -----
+                
+                const endpoint = "localhost:3000/survay";
+                $.post(endpoint, JSON.stringify(body)).done(function (response) {
+                 //   window.location.href = "/survey-end.html";
+                }).fail(function(xhr, status, error) {
+                    alert("제출에 실패하였습니다. 담당 관리자에 연락 부탁드립니다.");
+                });
+            });
+
+            // 개인정보 수집 문항 활성화 시 필요한 함수입니다.
+            $('#check').change(function() {
+                if ($('#check').is(':checked')) {
+                    $('#submitBtn').attr('disabled', false);
+                } else {
+                    $('#submitBtn').attr('disabled', true);
+                }
+            })
+
+        });
+    </script>
+</head>
+
+<body>
+    <!-- As a heading -->
+    <form id="submitForm" enctype="application/json">
+        <div class="container">
+            <nav class="navbar navbar-light bg-light">
+                <span class="navbar-brand mb-0 h1" style="font-size: 24px; padding: 5px;">AWS WAF Immersion Day 참여 설문</span>
+            </nav>
+            <p><span style="font-size: 18px;">
+                안녕하세요 WAF Immersion Day에 참석해주셔서 감사드립니다.
+본 설문은 참석자분들의 세미나 만족도를 파악하고 향후 더 나은 컨텐츠를 준비하기 위해서 준비하였으니 소중한 의견을 부탁드립니다.
+<br><br>
+                <br>
+                </span></p>
+            <hr class="my-4" style="border-top: 1px solid #ccc">
+
+            <div class="card text-dark bg-light mb-3">
+                <div class="card-header">기본 정보</div>
+                <div class="card-body">
+                    <h5 class="card-title">성함</h5>
+                    <input type="text" name="name" class="form-control" id="name" value="" placeholder="홍길동" required>
+                </div>
+            </div>
+
+            <div class="card text-dark bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">회사</h5>
+                    <input type="text" name="company" class="form-control" id="company" value="" placeholder="AWS" required>
+                </div>
+            </div>
+
+            <div class="card text-dark bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">직책</h5>
+                    <input type="text" name="job" class="form-control" id="job" value="" placeholder="사원" required>
+                </div>
+            </div>
+
+            <div class="card text-dark bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">이메일(세미나 신청시 등록하신 이메일 주소_세션 자료 제공 예정)</h5>
+                    <input type="text" name="email" class="form-control" id="email" value="" placeholder="hong@test.com">
+                </div>
+            </div>
+
+            <hr class="my-4" style="border-top: 1px solid #ccc">
+        </div>
+
+        <div class="container">
+          
+
+            <!-- CSAT UI BEGIN -->
+            <!-- 라디오 버튼의 name 을 수정해서 매핑하시면 쉽습니다. -->
+            <div class="card text-dark bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">본 웨비나 강연내용에 대해 만족하십니까?</h5>
+                    <div class="row" style="text-align: center;">
+                        <div class="col-2"></div>
+                        <div class="col-1"><label class="form-check-label" for="satisfy1">1</label></div>
+                        <div class="col-1"><label class="form-check-label" for="satisfy2">2</label></div>
+                        <div class="col-1"><label class="form-check-label" for="satisfy3">3</label></div>
+                        <div class="col-1"><label class="form-check-label" for="satisfy4">4</label></div>
+                        <div class="col-1"><label class="form-check-label" for="satisfy5">5</label></div>
+                    </div>
+                    <div class="row" style="text-align: center;">
+                        <div class="col-2">
+                            <span>매우 불만족</span>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="satisfyRadioOptions" id="satisfy1" value="1">
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="satisfyRadioOptions" id="satisfy2" value="2">
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="satisfyRadioOptions" id="satisfy3" value="3">
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="satisfyRadioOptions" id="satisfy4" value="4">
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="satisfyRadioOptions" id="satisfy5" value="5" required>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <span>매우 만족</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- CSAT UI END -->
+
+            <!-- 주관식 UI BEGIN -->
+            <!-- <div class="card text-dark bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">만족/불만족하신 이유를 간략히 남겨주세요.</h5>
+                    <input type="text" name="name" class="form-control" id="result" value="" placeholder="">
+                </div>
+            </div> -->
+            <!-- 주관식 UI END -->
+            <div class="card text-dark bg-light mb-3">
+                <div class="card-body" id="cloud">
+                    <h5 class="card-title">현재 클라우드로 구동중이거나 계획중인 프로젝트가 있으십니까?</h5>
+                    <div class="row" style="text-align: center;">
+                        <div class="col-2"></div>
+                        <div class="col-1"><label class="form-check-label" for="cloud1" onclick="cloudYesClick();">예</label></div>
+                        <div class="col-1"><label class="form-check-label" for="cloud2" onclick="cloudNoClick();" >아니오</label></div>
+
+                    </div>
+                    <div class="row" style="text-align: center;">
+                        <div class="col-2">
+                            <span></span>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="cloudRadioOptions" id="cloud1" onclick="cloudYesClick();" value="예">
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="cloudRadioOptions" id="cloud2" onclick="cloudNoClick();" value="아니오">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="appended" id="cloud-appended1" >
+                        <h5 class="card-title">‘예’를 선택하신 경우, 어떤 워크로드/서비스를 구동 또는 도입할 계획이십니까?</h5>
+                        <input type="text" name="name" class="form-control" id="cloudWorkload" value="" placeholder="예: Production DB (Mysql) 마이그레이션, 신규 IoT 서비스 오픈">
+                    </div>
+                    <div class="appended" id="cloud-appended2"><h5 class="card-title">도입하고자 하는 시기는 언제이신가요?</h5>
+                        <input type="radio" id="1month" name="cloudTimelineRadioOption" value="1month">
+                        <label for="male">1개월 이내</label><br>
+                        <input type="radio" id="3month" name="cloudTimelineRadioOption" value="3month">
+                        <label for="female">3개월 이내</label><br>
+                        <input type="radio" id="6month" name="cloudTimelineRadioOption" value="6month">
+                        <label for="other">6개월 이내</label><br>
+                        <input type="radio" id="12month" name="cloudTimelineRadioOption" value="12month">
+                        <label for="other">12개월 이내</label>
+                    </div>
+                </div>
+            </div>
+            <div class="card text-dark bg-light mb-3">
+                <div class="card-body" id="waf">
+                    <h5 class="card-title">오늘 행사에서 배우신 AWS WAF 를 실무에 적용하실 계획이 있으십니까?</h5>
+                    <div class="row" style="text-align: center;" >
+                        <div class="col-2"></div>
+                        <div class="col-1"><label class="form-check-label" for="waf1" onclick="wafYesClick();">예</label></div>
+                        <div class="col-1"><label class="form-check-label" for="waf2" onclick="wafNoClick();">아니오</label></div>
+
+                    </div>
+                    <div class="row" style="text-align: center;">
+                        <div class="col-2">
+                            <span></span>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="wafRadioOptions" id="waf1" onclick="wafYesClick();" value="예">
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="wafRadioOptions" id="waf2" onclick="wafNoClick();" value="아니오">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="appended" id="waf-appended"><h5 class="card-title">‘예’를 선택하신 경우, 적용하고자 하는 시기는 언제이신가요?</h5> 
+                        <input type="radio" id="1month" name="wafTimelineRadioOption" value="1month">
+                        <label for="male">1개월 이내</label><br>
+                        <input type="radio" id="3month" name="wafTimelineRadioOption" value="3month">
+                        <label for="female">3개월 이내</label><br>
+                        <input type="radio" id="6month" name="wafTimelineRadioOption" value="6month">
+                        <label for="other">6개월 이내</label><br>
+                       <input type="radio" id="12month" name="wafTimelineRadioOption" value="12month">
+                        <label for="other">12개월 이내</label></div>
+                </div>
+            </div>
+            <div class="card text-dark bg-light mb-3">
+                <div class="card-body" id="mte">
+                    <h5 class="card-title">귀사의 클라우드 도입/운영과 관련해 전문가의 무료 이메일/전화 상담을 원하십니까?</h5>
+                    <div class="row" style="text-align: center;">
+                        <div class="col-2"></div>
+                        <div class="col-1"><label class="form-check-label" for="mte1">예</label></div>
+                        <div class="col-1"><label class="form-check-label" for="mte2">아니오</label></div>
+
+                    </div>
+                    <div class="row" style="text-align: center;">
+                        <div class="col-2">
+                            <span></span>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="mteRadioOptions" id="mte1" value="예">
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="mteRadioOptions" id="mte2" value="아니오">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card text-dark bg-light mb-3">
+                <div class="card-body" id="sa">
+                    <h5 class="card-title">AWS 솔루션즈 아키텍트(SA) 분과 아키텍쳐 리뷰를 받아보신 적이 있으십니까?</h5>
+                    <div class="row" style="text-align: center;">
+                        <div class="col-2"></div>
+                        <div class="col-1"><label class="form-check-label" for="sa1" onclick="metSaYes();">예</label></div>
+                        <div class="col-1"><label class="form-check-label" for="sa2" onclick="metSaNo();">아니오</label></div>
+
+                    </div>
+                    <div class="row" style="text-align: center;">
+                        <div class="col-2">
+                            <span></span>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="saRadioOptions" id="sa1" onclick="metSaYes();" value="예">
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="saRadioOptions" id="sa2" onclick="metSaNo();" value="아니오">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="appended" id="sa-appended"><h5 class="card-title">‘아니오’를 선택하신 경우, 추후 아키텍쳐 리뷰를 받아보실 의향이 있으십니까?</h5>
+                        <input type="radio" id="yes" name="wantSaRadioOption" value="yes">
+                         <label for="other">예</label><br>
+                        <input type="radio" id="no" name="wantSaRadioOption" value="no">
+                         <label for="other">아니오</label></div>
+                </div>
+            </div>
+            <div class="card text-dark bg-light mb-3">
+                <div class="card-body" id="additional-topic">
+                    <h5 class="card-title">AWS에서 제공하는 교육 세미나에서 듣고 싶으신 주제들을 모두 골라주십시오.</h5>
+                    <div class="row" style="text-align: center;">
+                        <div class="col-2"></div>
+
+                    </div>
+                    <div class="row" style="text-align: left;">
+
+                        <fieldset>
+
+                            <p>
+                                <div class=""><input type="checkbox" name="additional-topic" value="101">AWS서비스 기초 – EC2, RDS, Cloudfront, S3에 대한 간략한 소개 <br></div>
+                                <div class=""><input type="checkbox" name="additional-topic" value="compute">Computing – 탄력적인 아키텍쳐 운영<br></div>
+                                <div class=""><input type="checkbox" name="additional-topic" value="serverless">Serverless – 서버가 필요 없는 새로운 아키텍쳐<br></div>
+                                <div class=""><input type="checkbox" name="additional-topic" value="cicd">CI/CD – 개발부터 배포까지 자동화를 통한 생산성 향상<br></div>
+                                <div class=""><input type="checkbox" name="additional-topic" value="container">Container – 서비스 기반 아키텍쳐의 핵심 단위<br></div>
+                                <div class=""><input type="checkbox" name="additional-topic" value="db">Database – 상황에 맞는 Database 활용 가이드<br></div>
+                                <div class=""><input type="checkbox" name="additional-topic" value="amplify">Web Application / Mobile Development – Amplify 를 활용한 앱 개발<br></div>
+                                <div class=""><input type="checkbox" name="additional-topic" value="iot">IOT – AWS 에서 제공하는 사물 인터넷 서비스 전반<br></div>
+                                <div class=""><input type="checkbox" name="additional-topic" value="cdn">Contents Delivery Network - CDN – 고속 컨텐츠 전송 및 글로벌 네트워킹<br></div>
+                                <div class=""><input type="checkbox" name="additional-topic" value="dr">Disaster Recovery (DR:재해복구) – 안전하게 데이터를 보관하는 방법<br></div>
+                                <div class=""><input type="checkbox" name="additional-topic" value="analytics">Big Data, Analysis – 상황에 맞는 다양한 데이터 수집 및 분석 방법 안내<br></div>
+                                <div class=""><input type="checkbox" name="additional-topic" value="ai">AI/ML solution – 데이터 분석가 없이 간단하게 사용해 볼 수 있는 AI/ML 솔루션<br></div>
+                                <div class=""><input type="checkbox" name="additional-topic" value="ml">SageMaker – 머신러닝 모델을 직접 제작/관리/배포하는 분들을 위한 관리 솔루션<br></div>
+                                <div class=""><input type="checkbox" name="additional-topic" value="security">Security – WAF 방화벽, Guard Duty 등 AWS에서 제공하는 보안 서비스<br></div>
+                                <div class=""><input type="checkbox" name="additional-topic" value="etc">기타</div>
+        
+                            </p>
+                          </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+
+
+            <div class="card text-dark bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">향후 세미나를 위해 좋았던 점이나 개선점을 간략하게 알려주세요.</h5>
+                    <input type="text" name="name" class="form-control" id="feedback" value="" placeholder="">
+                </div>
+            </div>
+
+            <!-- 개인정보 수집문항 UI BEGIN -->
+            <hr class="my-4" style="border-top: 1px solid #ccc">
+
+            <p><span style="font-size: 18px; font-weight: bold;">개인정보 수집 및 활용에 관한 동의</span></p>
+            <p><span style="font-size: 14px;">아마존웹서비시즈코리아(“회사”)는 아래 내용에 따라 귀하의 정보를 수집 및 활용합니다. 다음의 내용을 숙지하시고 동의하시는 경우 체크 박스에 표시해주세요. </span></p>
+    
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th scope="row">수집 및 이용 목적</th>
+                        <td>설문 참여에 대한 보상 전달</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">수집하려는 개인 정보 항목</th>
+                        <td>이름, 회사, 직책, 이메일주소</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">개인 정보 보유 및 이용기간</th>
+                        <td>이용 목적 달성 시 즉시 폐기</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p><span style="font-size: 14px;">귀하는 이러한 개인 정보 수집 및 활용에 동의하지 않을 권리가 있으며, 동의하지 않으시는 경우, 설문 참여에 대한 보상을 전달받을 수 없습니다.</span></p>
+
+            <div class="form-check" style="padding-bottom: 10px;">
+                <input type="checkbox" class="form-check-input" id="check">
+                <label class="form-check-label">(필수) 본인은 위 사항을 숙지하였으며, 위의 개인 정보 수집 및 이용에 동의합니다.</label>
+            </div>              
+            <!-- 개인정보 수집문항 UI END -->
+
+            <div class="row align-items-start">
+                <div class="col-2">
+                    <button type="submit" class="btn btn-primary" id="submitBtn" disabled>응답 제출</button>
+                    <!-- <button type="submit" class="btn btn-primary" id="consoleBtn" onclick="consoleLog();">콘솔 출력</button> -->
+
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>
