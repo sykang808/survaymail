@@ -12,8 +12,7 @@ import pytest
 TOPIC_ARN = 'arn:aws:sns:ap-northeast-2:566034038752:survay'
 SUBSCRIPTION_ARN = 'arn:aws:sns:ap-northeast-2:566034038752:survay:b21a8f09-cb69-4d28-ac10-b5df980e9f09'
 
-client = boto3.client('sns')
-
+ 
 app = Flask(__name__)
 api = Api(app)
 CORS(app, resources={r'*': {'origins': '*'}})
