@@ -6,7 +6,6 @@ from flask import Flask, request # change
 from flask_cors import CORS, cross_origin
 import boto3
 from botocore.exceptions import ClientError
-from sns_basics import SnsWrapper
 
 TOPIC_ARN = 'arn:aws:sns:ap-northeast-2:566034038752:survay'
 SUBSCRIPTION_ARN = 'arn:aws:sns:ap-northeast-2:566034038752:survay:b21a8f09-cb69-4d28-ac10-b5df980e9f09'

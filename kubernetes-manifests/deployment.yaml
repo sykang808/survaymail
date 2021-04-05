@@ -25,7 +25,7 @@ spec:
         app: survay-restapi
     spec:
       containers:
-      - image: 566034038752.dkr.ecr.us-west-2.amazonaws.com/sykang/survay-restapi:latest
+      - image: 566034038752.dkr.ecr.us-west-2.amazonaws.com/survaymail:latest
         imagePullPolicy: Always
         name: survay-restapi
         ports:
