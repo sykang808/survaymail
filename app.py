@@ -18,11 +18,11 @@ CORS(app, resources={r'*': {'origins': '*'}})
 @api.response(404, "Could not put survay")
 class SurvayPost(Resource):
     def post(self):
-        t_data = request.get_json(force=True)
+        data = request.get_json(force=True)
         client = boto3.client('sns',region_name='us-west-2')
         response = client.publish(
             TopicArn='arn:aws:sns:us-west-2:566034038752:survay',    
-            Message= json.dumps(data=t_data, ensure_ascii = False )
+            Message= json.dumps(data)
         )
         return "Response: {}".format(response), 200
 
