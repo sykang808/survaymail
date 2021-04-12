@@ -22,7 +22,7 @@ class SurvayPost(Resource):
         client = boto3.client('sns',region_name='us-west-2')
         response = client.publish(
             TopicArn='arn:aws:sns:us-west-2:566034038752:survay',    
-            Message= json.dumps(data)
+            Message= json.dumps(data, ensure_ascii=False )
         )
         return "Response: {}".format(response), 200
 
